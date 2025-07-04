@@ -5,70 +5,585 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Iniciar Sesión</title>
+  <title>Iniciar Sesión - CineX</title>
 
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Iconos Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Tu CSS personalizado -->
   <link href="{% static 'css/site.css' %}" rel="stylesheet">
+  
+  <style>
+    :root {
+      --cinema-gold: #FFD700;
+      --cinema-dark: #0a0a0a;
+      --cinema-red: #dc2626;
+      --cinema-blue: #1e40af;
+      --cinema-purple: #7c3aed;
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
+      animation: backgroundShift 20s ease-in-out infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% { 
+        background: 
+          radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
+      }
+      50% { 
+        background: 
+          radial-gradient(circle at 80% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
+      }
+    }
+
+    /* Floating Elements */
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-element {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 15s ease-in-out infinite;
+    }
+
+    .floating-element:nth-child(1) {
+      top: 10%;
+      left: 10%;
+      font-size: 2rem;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      top: 20%;
+      right: 15%;
+      font-size: 1.5rem;
+      animation-delay: 5s;
+    }
+
+    .floating-element:nth-child(3) {
+      bottom: 30%;
+      left: 20%;
+      font-size: 1.8rem;
+      animation-delay: 10s;
+    }
+
+    .floating-element:nth-child(4) {
+      bottom: 20%;
+      right: 10%;
+      font-size: 2.2rem;
+      animation-delay: 15s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      25% { transform: translateY(-20px) rotate(5deg); }
+      50% { transform: translateY(-40px) rotate(-5deg); }
+      75% { transform: translateY(-20px) rotate(3deg); }
+    }
+
+    /* Main Container */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Login Card */
+    .login-card {
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 20px;
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 100px rgba(255, 215, 0, 0.1);
+      width: 100%;
+      max-width: 420px;
+      overflow: hidden;
+      position: relative;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cinema-gold), var(--cinema-purple), var(--cinema-gold));
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* Header */
+    .login-header {
+      text-align: center;
+      padding: 2.5rem 2rem 1.5rem;
+      position: relative;
+    }
+
+    .login-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--cinema-gold);
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+      margin-bottom: 0.5rem;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+      to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+    }
+
+    .login-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      font-weight: 300;
+    }
+
+    /* Form Styles */
+    .login-form {
+      padding: 0 2rem 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .form-label {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 0.875rem 1rem;
+      color: #fff;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--cinema-gold);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+      color: #fff;
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Button Styles */
+    .btn-cinema {
+      background: linear-gradient(45deg, var(--cinema-gold), #fbbf24);
+      color: #000;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cinema::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: all 0.6s ease;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn-cinema:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-cinema:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+      color: #000;
+    }
+
+    .btn-cinema:active {
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .login-footer {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .login-footer p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+    }
+
+    .login-footer a {
+      color: var(--cinema-gold);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .login-footer a:hover {
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Alert Styles */
+    .alert {
+      border: none;
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .alert-danger {
+      background: rgba(220, 38, 38, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(220, 38, 38, 0.3);
+    }
+
+    .error-message {
+      color: #fca5a5;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    /* Input Icons */
+    .input-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 1rem;
+      }
+      
+      .login-card {
+        max-width: 100%;
+        margin: 0 1rem;
+      }
+      
+      .login-logo {
+        font-size: 2rem;
+      }
+      
+      .login-header {
+        padding: 2rem 1.5rem 1rem;
+      }
+      
+      .login-form {
+        padding: 0 1.5rem 1.5rem;
+      }
+      
+      .login-footer {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .loading .btn-cinema {
+      position: relative;
+    }
+
+    .loading .btn-cinema::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid transparent;
+      border-top: 2px solid #000;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
-<body class="bg-dark text-light">
+<body>
+  <!-- Floating Elements -->
+  <div class="floating-elements">
+    <i class="bi bi-film floating-element"></i>
+    <i class="bi bi-camera-reels floating-element"></i>
+    <i class="bi bi-ticket-perforated floating-element"></i>
+    <i class="bi bi-star-fill floating-element"></i>
+  </div>
 
-  <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-sm bg-secondary text-white" style="width: 360px;">
-      <div class="card-body">
-        <h3 class="card-title text-center mb-4">Iniciar Sesión</h3>
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Header -->
+      <div class="login-header">
+        <div class="login-logo">
+          <i class="bi bi-film me-2"></i>CineX
+        </div>
+        <p class="login-subtitle">Bienvenido de vuelta</p>
+      </div>
 
-        <form method="post" novalidate>
-          {% csrf_token %}
+      <!-- Form -->
+      <form method="post" novalidate class="login-form" id="loginForm">
+        {% csrf_token %}
 
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
-            </div>
-          {% endif %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
 
-          <div class="mb-3">
-            <label for="id_username" class="form-label">Usuario</label>
+        <div class="form-group">
+          <label for="id_username" class="form-label">
+            <i class="bi bi-person me-1"></i>Usuario
+          </label>
+          <div class="position-relative">
             <input
               type="text"
               name="username"
               id="id_username"
-              class="form-control bg-dark text-light border-light"
+              class="form-control"
               value="{{ form.username.value|default_if_none:'' }}"
-              required autofocus
+              placeholder="Ingresa tu usuario"
+              required 
+              autofocus
             >
-            {% if form.username.errors %}
-              <div class="text-danger small">{{ form.username.errors.0 }}</div>
-            {% endif %}
+            <i class="bi bi-person-circle input-icon"></i>
           </div>
+          {% if form.username.errors %}
+            <span class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              {{ form.username.errors.0 }}
+            </span>
+          {% endif %}
+        </div>
 
-          <div class="mb-3">
-            <label for="id_password" class="form-label">Contraseña</label>
+        <div class="form-group">
+          <label for="id_password" class="form-label">
+            <i class="bi bi-shield-lock me-1"></i>Contraseña
+          </label>
+          <div class="position-relative">
             <input
               type="password"
               name="password"
               id="id_password"
-              class="form-control bg-dark text-light border-light"
+              class="form-control"
+              placeholder="Ingresa tu contraseña"
               required
             >
-            {% if form.password.errors %}
-              <div class="text-danger small">{{ form.password.errors.0 }}</div>
-            {% endif %}
+            <i class="bi bi-lock-fill input-icon"></i>
           </div>
+          {% if form.password.errors %}
+            <span class="error-message">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              {{ form.password.errors.0 }}
+            </span>
+          {% endif %}
+        </div>
 
-          <button type="submit" class="btn btn-primary w-100">Entrar</button>
-        </form>
-      </div>
-      <div class="card-footer text-center bg-secondary">
-        ¿No tienes cuenta? <a href="" class="link-light">Regístrate</a>
+        <button type="submit" class="btn btn-cinema" id="loginBtn">
+          <i class="bi bi-box-arrow-in-right me-2"></i>
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>
+          ¿No tienes cuenta? 
+          <a href="#" class="register-link">
+            <i class="bi bi-person-plus me-1"></i>Regístrate aquí
+          </a>
+        </p>
       </div>
     </div>
   </div>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('loginForm');
+      const loginBtn = document.getElementById('loginBtn');
+      const inputs = document.querySelectorAll('.form-control');
+
+      // Form submission handling
+      form.addEventListener('submit', function(e) {
+        loginBtn.classList.add('loading');
+        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Iniciando sesión...';
+      });
+
+      // Input focus effects
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        input.addEventListener('blur', function() {
+          this.parentElement.style.transform = 'scale(1)';
+        });
+
+        // Real-time validation feedback
+        input.addEventListener('input', function() {
+          if (this.value.length > 0) {
+            this.style.borderColor = 'var(--cinema-gold)';
+          } else {
+            this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }
+        });
+      });
+
+      // Enhanced visual feedback
+      const card = document.querySelector('.login-card');
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
+        this.style.boxShadow = '0 35px 60px rgba(0, 0, 0, 0.6), 0 0 120px rgba(255, 215, 0, 0.15)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(255, 215, 0, 0.1)';
+      });
+
+      // Keyboard navigation enhancement
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          const focusedElement = document.activeElement;
+          if (focusedElement && focusedElement.type !== 'submit') {
+            e.preventDefault();
+            const formElements = Array.from(form.elements);
+            const currentIndex = formElements.indexOf(focusedElement);
+            const nextElement = formElements[currentIndex + 1];
+            if (nextElement) {
+              nextElement.focus();
+            }
+          }
+        }
+      });
+
+      // Error shake animation
+      const errorElements = document.querySelectorAll('.error-message');
+      if (errorElements.length > 0) {
+        card.style.animation = 'shake 0.5s ease-in-out';
+      }
+
+      // Add shake animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
 </body>
 </html>
