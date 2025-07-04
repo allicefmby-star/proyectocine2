@@ -15,13 +15,14 @@
   <!-- Custom CSS -->
   <style>
     :root {
-      --cinema-gold: #FFD700;
-      --cinema-dark: #0a0a0a;
-      --cinema-red: #dc2626;
-      --cinema-blue: #1e40af;
-      --cinema-purple: #7c3aed;
-      --glass-bg: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
+      --axolotl-purple: #A68DFF;
+      --axolotl-yellow: #FFD54F;
+      --axolotl-black: #121212;
+      --axolotl-gray: #2C2C3A;
+      --axolotl-white: #F5F5F5;
+      --axolotl-pink: #F2B5D4;
+      --glass-bg: rgba(166, 141, 255, 0.1);
+      --glass-border: rgba(166, 141, 255, 0.2);
     }
 
     * {
@@ -30,10 +31,11 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      background: linear-gradient(135deg, #121212 0%, #1a1a2e 50%, #2C2C3A 100%);
       min-height: 100vh;
       position: relative;
       overflow-x: hidden;
+      color: var(--axolotl-white);
     }
 
     body::before {
@@ -44,57 +46,82 @@
       right: 0;
       bottom: 0;
       background: 
-        radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 20% 20%, rgba(166, 141, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(242, 181, 212, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 213, 79, 0.08) 0%, transparent 50%);
       pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Axolotl decorative elements */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 10%;
+      right: 5%;
+      width: 60px;
+      height: 40px;
+      background: linear-gradient(45deg, var(--axolotl-purple), var(--axolotl-pink));
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.1;
+      animation: float 6s ease-in-out infinite;
       z-index: -1;
     }
 
     /* Navbar Styles */
     .navbar {
-      background: rgba(10, 10, 10, 0.95) !important;
+      background: rgba(18, 18, 18, 0.95) !important;
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+      border-bottom: 2px solid rgba(166, 141, 255, 0.3);
       padding: 1rem 0;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(166, 141, 255, 0.2);
     }
 
     .navbar-brand {
       font-family: 'Orbitron', monospace;
       font-weight: 900;
       font-size: 1.8rem;
-      color: var(--cinema-gold) !important;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      color: var(--axolotl-purple) !important;
+      text-shadow: 0 0 20px rgba(166, 141, 255, 0.5);
       transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .navbar-brand::before {
+      content: '🎬';
+      position: absolute;
+      left: -35px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      animation: pulse 2s infinite;
     }
 
     .navbar-brand:hover {
       transform: scale(1.05);
-      text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-    }
-
-    .navbar-brand i {
-      animation: pulse 2s infinite;
+      text-shadow: 0 0 30px rgba(166, 141, 255, 0.8);
+      color: var(--axolotl-pink) !important;
     }
 
     @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-50%) scale(1.1); }
     }
 
     .nav-link {
-      color: rgba(255, 255, 255, 0.8) !important;
+      color: var(--axolotl-white) !important;
       font-weight: 500;
       padding: 0.8rem 1.2rem !important;
       margin: 0 0.2rem;
-      border-radius: 8px;
+      border-radius: 12px;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
+      background: rgba(44, 44, 58, 0.3);
+      border: 1px solid rgba(166, 141, 255, 0.2);
     }
 
     .nav-link::before {
@@ -104,7 +131,7 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+      background: linear-gradient(90deg, transparent, rgba(166, 141, 255, 0.3), transparent);
       transition: left 0.5s ease;
     }
 
@@ -114,23 +141,25 @@
 
     .nav-link:hover,
     .nav-link.active {
-      color: var(--cinema-gold) !important;
-      background: rgba(255, 215, 0, 0.1);
+      color: var(--axolotl-black) !important;
+      background: linear-gradient(45deg, var(--axolotl-yellow), #fff176);
       transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(255, 213, 79, 0.4);
+      border-color: var(--axolotl-yellow);
+      font-weight: 600;
     }
 
     .dropdown-menu {
-      background: rgba(10, 10, 10, 0.95);
+      background: rgba(18, 18, 18, 0.95);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(166, 141, 255, 0.3);
       border-radius: 12px;
       padding: 0.5rem 0;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     }
 
     .dropdown-item {
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--axolotl-white);
       padding: 0.8rem 1.5rem;
       transition: all 0.3s ease;
       border: none;
@@ -140,13 +169,13 @@
     }
 
     .dropdown-item:hover {
-      background: rgba(255, 215, 0, 0.1);
-      color: var(--cinema-gold);
+      background: rgba(255, 213, 79, 0.2);
+      color: var(--axolotl-black);
       transform: translateX(5px);
     }
 
     .dropdown-divider {
-      border-color: rgba(255, 215, 0, 0.3);
+      border-color: rgba(166, 141, 255, 0.3);
     }
 
     /* Main Content */
@@ -162,8 +191,8 @@
 
     /* Footer */
     footer {
-      background: rgba(10, 10, 10, 0.9);
-      border-top: 1px solid rgba(255, 215, 0, 0.3);
+      background: rgba(18, 18, 18, 0.9);
+      border-top: 2px solid rgba(166, 141, 255, 0.3);
       margin-top: 4rem;
       padding: 2rem 0;
       position: relative;
@@ -176,8 +205,8 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--cinema-gold), transparent);
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--axolotl-purple), var(--axolotl-pink), transparent);
     }
 
     /* Responsive Design */
@@ -193,30 +222,32 @@
 
     /* Glass Effect Utilities */
     .glass-card {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(166, 141, 255, 0.1);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(166, 141, 255, 0.2);
       border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(166, 141, 255, 0.2);
     }
 
     /* Button Styles */
     .btn-cinema {
-      background: linear-gradient(45deg, var(--cinema-gold), #fbbf24);
-      color: #000;
+      background: linear-gradient(45deg, var(--axolotl-yellow), #fff176);
+      color: var(--axolotl-black);
       border: none;
       padding: 0.75rem 1.5rem;
-      border-radius: 8px;
+      border-radius: 12px;
       font-weight: 600;
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(255, 213, 79, 0.3);
     }
 
     .btn-cinema:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-      color: #000;
+      box-shadow: 0 8px 25px rgba(255, 213, 79, 0.5);
+      color: var(--axolotl-black);
+      background: linear-gradient(45deg, #fff176, var(--axolotl-yellow));
     }
 
     /* Floating Animation */
@@ -231,21 +262,22 @@
 
     /* Glowing Text */
     .glow-text {
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      text-shadow: 0 0 10px rgba(166, 141, 255, 0.5);
     }
 
     /* Navbar Toggler */
     .navbar-toggler {
-      border: 1px solid rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(166, 141, 255, 0.3);
       padding: 0.5rem;
+      background: rgba(44, 44, 58, 0.5);
     }
 
     .navbar-toggler:focus {
-      box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+      box-shadow: 0 0 0 0.2rem rgba(166, 141, 255, 0.25);
     }
 
     .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 215, 0, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28166, 141, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
     }
 
     /* Scrollbar Styling */
@@ -254,28 +286,100 @@
     }
 
     ::-webkit-scrollbar-track {
-      background: rgba(10, 10, 10, 0.5);
+      background: rgba(18, 18, 18, 0.5);
     }
 
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, var(--cinema-gold), #fbbf24);
+      background: linear-gradient(to bottom, var(--axolotl-purple), var(--axolotl-pink));
       border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(to bottom, #fbbf24, var(--cinema-gold));
+      background: linear-gradient(to bottom, var(--axolotl-pink), var(--axolotl-purple));
+    }
+
+    /* Axolotl-inspired decorative elements */
+    .axolotl-decoration {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 40px;
+      height: 30px;
+      background: linear-gradient(45deg, var(--axolotl-purple), var(--axolotl-pink));
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.1;
+      animation: float 4s ease-in-out infinite reverse;
+      z-index: -1;
+    }
+
+    .axolotl-decoration::before {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 5px;
+      width: 8px;
+      height: 8px;
+      background: var(--axolotl-pink);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .axolotl-decoration::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      right: 5px;
+      width: 8px;
+      height: 8px;
+      background: var(--axolotl-pink);
+      border-radius: 50%;
+      animation: pulse 2s infinite 0.5s;
+    }
+
+    /* Highlight active states with axolotl colors */
+    .active-highlight {
+      background: linear-gradient(45deg, var(--axolotl-purple), var(--axolotl-pink));
+      color: var(--axolotl-white) !important;
+    }
+
+    /* Custom focus states */
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--axolotl-purple);
+      box-shadow: 0 0 0 0.2rem rgba(166, 141, 255, 0.25);
+    }
+
+    /* Alert customization */
+    .alert-info {
+      background: rgba(166, 141, 255, 0.1);
+      border-color: var(--axolotl-purple);
+      color: var(--axolotl-white);
+    }
+
+    .alert-success {
+      background: rgba(255, 213, 79, 0.1);
+      border-color: var(--axolotl-yellow);
+      color: var(--axolotl-white);
+    }
+
+    .alert-warning {
+      background: rgba(242, 181, 212, 0.1);
+      border-color: var(--axolotl-pink);
+      color: var(--axolotl-white);
     }
   </style>
   <link href="{% static 'css/site.css' %}" rel="stylesheet">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <!-- Axolotl decorative element -->
+  <div class="axolotl-decoration"></div>
 
   <!-- ============ NAVBAR ============ -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold floating" href="{% url 'home' %}">
-        <i class="bi bi-film me-2"></i>CineX
+        CineX
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -350,7 +454,7 @@
             © {% now "Y" %} CineX · La mejor experiencia cinematográfica
           </p>
           <p class="mb-0 opacity-75">
-            Desarrollado con <i class="bi bi-heart-fill text-danger"></i> usando Django
+            Desarrollado con <i class="bi bi-heart-fill" style="color: var(--axolotl-pink);"></i> usando Django
           </p>
         </div>
       </div>
@@ -388,6 +492,30 @@
           this.style.filter = 'brightness(1)';
         });
       });
+
+      // Crear efecto de burbujas flotantes (inspirado en el hábitat acuático del axolotl)
+      function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.style.position = 'fixed';
+        bubble.style.bottom = '-10px';
+        bubble.style.left = Math.random() * window.innerWidth + 'px';
+        bubble.style.width = Math.random() * 20 + 10 + 'px';
+        bubble.style.height = bubble.style.width;
+        bubble.style.background = 'rgba(166, 141, 255, 0.1)';
+        bubble.style.borderRadius = '50%';
+        bubble.style.pointerEvents = 'none';
+        bubble.style.animation = 'float 8s linear infinite';
+        bubble.style.zIndex = '-1';
+        
+        document.body.appendChild(bubble);
+        
+        setTimeout(() => {
+          bubble.remove();
+        }, 8000);
+      }
+
+      // Crear burbujas periódicamente
+      setInterval(createBubble, 3000);
     });
   </script>
   
