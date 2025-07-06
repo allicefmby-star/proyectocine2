@@ -68,6 +68,48 @@
       z-index: -1;
     }
 
+    /* Axolotl Images as Background Decorations */
+    .axolotl-bg-decoration {
+      position: fixed;
+      width: 120px;
+      height: 80px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cg fill='%23A68DFF' opacity='0.08'%3E%3Cellipse cx='100' cy='70' rx='70' ry='25'/%3E%3Ccircle cx='100' cy='50' r='30'/%3E%3Ccircle cx='85' cy='45' r='3' fill='%23FFD54F'/%3E%3Ccircle cx='115' cy='45' r='3' fill='%23FFD54F'/%3E%3Cpath d='M70 35 Q65 25 70 20 Q75 25 70 35' fill='%23F2B5D4'/%3E%3Cpath d='M130 35 Q135 25 130 20 Q125 25 130 35' fill='%23F2B5D4'/%3E%3Cpath d='M30 60 Q20 55 15 60 Q20 65 30 60' fill='%23F2B5D4'/%3E%3Cpath d='M170 60 Q180 55 185 60 Q180 65 170 60' fill='%23F2B5D4'/%3E%3Cpath d='M100 65 Q90 70 100 75 Q110 70 100 65' fill='%23FFD54F'/%3E%3C/g%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .axolotl-bg-1 {
+      top: 15%;
+      left: 8%;
+      animation: float 8s ease-in-out infinite;
+      transform: rotate(-15deg);
+    }
+
+    .axolotl-bg-2 {
+      top: 60%;
+      right: 10%;
+      animation: float 6s ease-in-out infinite reverse;
+      transform: rotate(20deg);
+    }
+
+    .axolotl-bg-3 {
+      bottom: 20%;
+      left: 5%;
+      animation: float 10s ease-in-out infinite;
+      transform: rotate(-10deg);
+    }
+
+    /* Axolotl SVG Icons for decorative purposes */
+    .axolotl-icon {
+      width: 40px;
+      height: 30px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Cg fill='%23A68DFF' opacity='0.6'%3E%3Cellipse cx='50' cy='45' rx='35' ry='12'/%3E%3Ccircle cx='50' cy='30' r='15'/%3E%3Ccircle cx='43' cy='27' r='2' fill='%23FFD54F'/%3E%3Ccircle cx='57' cy='27' r='2' fill='%23FFD54F'/%3E%3Cpath d='M35 20 Q32 15 35 12 Q38 15 35 20' fill='%23F2B5D4'/%3E%3Cpath d='M65 20 Q68 15 65 12 Q62 15 65 20' fill='%23F2B5D4'/%3E%3Cpath d='M15 35 Q10 32 8 35 Q10 38 15 35' fill='%23F2B5D4'/%3E%3Cpath d='M85 35 Q90 32 92 35 Q90 38 85 35' fill='%23F2B5D4'/%3E%3Cpath d='M50 32 Q45 35 50 38 Q55 35 50 32' fill='%23FFD54F'/%3E%3C/g%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     /* Navbar Styles */
     .navbar {
       background: rgba(18, 18, 18, 0.95) !important;
@@ -88,15 +130,19 @@
       text-shadow: 0 0 20px rgba(166, 141, 255, 0.5);
       transition: all 0.3s ease;
       position: relative;
+      padding-left: 50px;
     }
 
     .navbar-brand::before {
-      content: '🎬';
+      content: '';
       position: absolute;
-      left: -35px;
+      left: 0;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 1.2rem;
+      width: 40px;
+      height: 30px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Cg fill='%23A68DFF'%3E%3Cellipse cx='50' cy='45' rx='35' ry='12'/%3E%3Ccircle cx='50' cy='30' r='15'/%3E%3Ccircle cx='43' cy='27' r='2' fill='%23FFD54F'/%3E%3Ccircle cx='57' cy='27' r='2' fill='%23FFD54F'/%3E%3Cpath d='M35 20 Q32 15 35 12 Q38 15 35 20' fill='%23F2B5D4'/%3E%3Cpath d='M65 20 Q68 15 65 12 Q62 15 65 20' fill='%23F2B5D4'/%3E%3Cpath d='M15 35 Q10 32 8 35 Q10 38 15 35' fill='%23F2B5D4'/%3E%3Cpath d='M85 35 Q90 32 92 35 Q90 38 85 35' fill='%23F2B5D4'/%3E%3Cpath d='M50 32 Q45 35 50 38 Q55 35 50 32' fill='%23FFD54F'/%3E%3C/g%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
       animation: pulse 2s infinite;
     }
 
@@ -209,14 +255,44 @@
       background: linear-gradient(90deg, transparent, var(--axolotl-purple), var(--axolotl-pink), transparent);
     }
 
+    /* Footer Axolotl decoration */
+    footer::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      width: 60px;
+      height: 40px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cg fill='%23A68DFF' opacity='0.3'%3E%3Cellipse cx='60' cy='60' rx='42' ry='15'/%3E%3Ccircle cx='60' cy='40' r='18'/%3E%3Ccircle cx='52' cy='36' r='2' fill='%23FFD54F'/%3E%3Ccircle cx='68' cy='36' r='2' fill='%23FFD54F'/%3E%3Cpath d='M42 26 Q38 18 42 14 Q46 18 42 26' fill='%23F2B5D4'/%3E%3Cpath d='M78 26 Q82 18 78 14 Q74 18 78 26' fill='%23F2B5D4'/%3E%3Cpath d='M18 42 Q12 38 10 42 Q12 46 18 42' fill='%23F2B5D4'/%3E%3Cpath d='M102 42 Q108 38 110 42 Q108 46 102 42' fill='%23F2B5D4'/%3E%3Cpath d='M60 42 Q54 46 60 50 Q66 46 60 42' fill='%23FFD54F'/%3E%3C/g%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
+      animation: float 4s ease-in-out infinite;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
       .navbar-brand {
         font-size: 1.5rem;
+        padding-left: 40px;
+      }
+      
+      .navbar-brand::before {
+        width: 30px;
+        height: 22px;
       }
       
       .nav-link {
         padding: 0.6rem 1rem !important;
+      }
+      
+      .axolotl-bg-decoration {
+        width: 80px;
+        height: 60px;
+      }
+      
+      .axolotl-bg-1,
+      .axolotl-bg-2,
+      .axolotl-bg-3 {
+        opacity: 0.5;
       }
     }
 
@@ -367,13 +443,29 @@
       border-color: var(--axolotl-pink);
       color: var(--axolotl-white);
     }
+
+    /* Axolotl swimming animation for special elements */
+    @keyframes swim {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(10px) rotate(5deg); }
+      75% { transform: translateX(-10px) rotate(-5deg); }
+    }
+
+    .axolotl-swim {
+      animation: swim 4s ease-in-out infinite;
+    }
   </style>
   <link href="{% static 'css/site.css' %}" rel="stylesheet">
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-  <!-- Axolotl decorative element -->
+  <!-- Axolotl decorative elements -->
   <div class="axolotl-decoration"></div>
+  
+  <!-- Axolotl background decorations -->
+  <div class="axolotl-bg-decoration axolotl-bg-1"></div>
+  <div class="axolotl-bg-decoration axolotl-bg-2"></div>
+  <div class="axolotl-bg-decoration axolotl-bg-3"></div>
 
   <!-- ============ NAVBAR ============ -->
   <nav class="navbar navbar-expand-lg">
@@ -450,7 +542,7 @@
       <div class="row">
         <div class="col-md-12">
           <p class="mb-2 glow-text">
-            <i class="bi bi-film me-2"></i>
+            <span class="axolotl-icon me-2"></span>
             © {% now "Y" %} CineX · La mejor experiencia cinematográfica
           </p>
           <p class="mb-0 opacity-75">
@@ -516,9 +608,10 @@
 
       // Crear burbujas periódicamente
       setInterval(createBubble, 3000);
-    });
-  </script>
-  
-  {% block extra_js %}{% endblock %}
-</body>
-</html>
+
+      // Crear ajolotes nadando ocasionalmente
+      function createSwimmingAxolotl() {
+        const axolotl = document.createElement('div');
+        axolotl.style.position = 'fixed';
+        axolotl.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        axol
