@@ -1,67 +1,76 @@
-# cinema/views.py
+
 from django.views.generic import TemplateView, DetailView, ListView
 from django.utils import timezone
-from .models import Showtime, SnackItem
+from .models import Customer, Order, OrderSnack, OrderTicket, PaymentMethod, Showtime, SnackItem
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
 from django.urls import reverse
 from .models import Showtime, Ticket, Seat, ReservationStatus
-from .models import Customer, Order, OrderTicket, PaymentMethod, Showtime, SnackItem
-from .models import Customer, Order, OrderSnack, OrderTicket, PaymentMethod, Showtime, SnackItem
+
+
 
 
 class HomeView(TemplateView):
-    template_name = "home.html"
+   template_name = "home.html"
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
 
-        # Cartelera: próximas 30 funciones ordenadas por hora
-        ctx["showtimes"] = (
-            Showtime.objects
-            .select_related("movie", "auditorium", "auditorium__cinema")
-            .filter(
-                movie__is_active=True,
-                auditorium__cinema__is_active=True,
-            )
-            .order_by("start_time")[:30]
-        )
-        # Snacks destacados: los 6 primeros disponibles (puedes cambiar el criterio)
-        ctx["snacks"] = (
-            SnackItem.objects
-            .select_related("category")
-            .filter(is_available=True)
-            .order_by("-updated")[:6]
-        )
-        return ctx
+   def get_context_data(self, **kwargs):
+       ctx = super().get_context_data(**kwargs)
+
+
+       # Cartelera: próximas 30 funciones ordenadas por hora
+       ctx["showtimes"] = (
+           Showtime.objects
+           .select_related("movie", "auditorium", "auditorium__cinema")
+           .filter(
+               movie__is_active=True,
+               auditorium__cinema__is_active=True,
+           )
+           .order_by("start_time")[:30]
+       )
+       # Snacks destacados: los 6 primeros disponibles (puedes cambiar el criterio)
+       ctx["snacks"] = (
+           SnackItem.objects
+           .select_related("category")
+           .filter(is_available=True)
+           .order_by("-updated")[:6]
+       )
+       return ctx
+
+
+
 
 
 
 class ShowtimeDetailView(DetailView):
-    model = Showtime
-    template_name = "showtime_detail.html"
-    context_object_name = "showtime"
+   model = Showtime
+   template_name = "showtime_detail.html"
+   context_object_name = "showtime"
 
-    def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .select_related("movie", "auditorium__cinema")
-        )
+
+   def get_queryset(self):
+       return (
+           super()
+           .get_queryset()
+           .select_related("movie", "auditorium__cinema")
+       )
+
 
 class SnackListView(ListView):
-    model = SnackItem
-    template_name = "snack_list.html"
-    context_object_name = "snacks"
-    paginate_by = 12
+   model = SnackItem
+   template_name = "snack_list.html"
+   context_object_name = "snacks"
+   paginate_by = 12
 
-    def get_queryset(self):
-        return (
-            SnackItem.objects
-            .filter(is_available=True)
-            .select_related("category")
-            .order_by("name")
-        )
+
+   def get_queryset(self):
+       return (
+           SnackItem.objects
+           .filter(is_available=True)
+           .select_related("category")
+           .order_by("name")
+       )
+
 
 from django.contrib import messages
 from .models import SnackItem, OrderSnack
@@ -116,7 +125,6 @@ class SnackDetailView(LoginRequiredMixin, DetailView):
            f"Añadiste {qty} × {self.object.name} a tu orden #{order.id}."
        )
        return redirect('snack_detail', pk=self.object.pk)
-
 
 
 from django.db import transaction
@@ -199,6 +207,41 @@ class SeatSelectionView(LoginRequiredMixin, View):
 
        return redirect('order_confirm', order_id=order.id)
   
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+
+
+
+
+def send_order_confirmation_email(order):
+   """
+   Envía al usuario un email (HTML + texto plano) confirmando
+   que su orden fue pagada exitosamente.
+   """
+   user = order.customer.user
+   subject = f'Confirmación de orden #{order.id}'
+   from_email = settings.DEFAULT_FROM_EMAIL
+   to = [user.email]
+
+
+   context = {
+       'user': user,
+       'order': order,
+   }
+
+
+   # Renderizamos ambas versiones del correo
+   text_body = render_to_string('emails/order_confirmation.txt', context)
+   html_body = render_to_string('emails/order_confirmation.html', context)
+
+
+   msg = EmailMultiAlternatives(subject, text_body, from_email, to)
+   msg.attach_alternative(html_body, "text/html")
+   msg.send()
+
+
+
 class OrderConfirmView(LoginRequiredMixin, View):
    login_url = 'login'
    template_name = 'order_confirm.html'
@@ -218,16 +261,19 @@ class OrderConfirmView(LoginRequiredMixin, View):
        order = get_object_or_404(
            Order, id=order_id, customer=request.user.customer
        )
-       pm = request.POST.get('payment_method')
-       order.payment_method = pm
+       # Actualizamos método de pago y estado
+       order.payment_method = request.POST.get('payment_method')
        order.status = Order.Status.PAID
        order.paid_at = timezone.now()
        order.save()
+
+
+       # Enviamos el correo de confirmación
+       send_order_confirmation_email(order)
+
+
+       # Redirigimos a la pantalla de éxito
        return redirect('order_success', order_id=order.id)
-   
-
-
-  
 class OrderSuccessView(LoginRequiredMixin, View):
    login_url = 'login'
    template_name = 'order_success.html'
@@ -257,7 +303,6 @@ class OrderSuccessView(LoginRequiredMixin, View):
            'ticket_total': ticket_total,
            'snack_total':  snack_total,
        })
-
 
 
 class OrderListView(LoginRequiredMixin, ListView):
@@ -302,7 +347,7 @@ class TicketPDFView(LoginRequiredMixin, View):
 
        # Encabezado
        p.setFont("Helvetica-Bold", 14)
-       p.drawCentredString(width/2, height-15*mm, "aztlan cinema")
+       p.drawCentredString(width/2, height-15*mm, "Cine.APIZACO")
        p.setLineWidth(0.5)
        p.line(5*mm, height-17*mm, width-5*mm, height-17*mm)
 
@@ -360,6 +405,11 @@ class TicketPDFView(LoginRequiredMixin, View):
            as_attachment=True,
            filename=f"ticket_{order.id}.pdf"
        )
+  
+
+
+
+
 
 
 

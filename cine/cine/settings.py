@@ -136,3 +136,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL          = 'login'
 LOGIN_REDIRECT_URL = 'home'    # o donde quieras llevar al usuario tras entrar
 LOGOUT_REDIRECT_URL= 'home'   # tras cerrar sesión
+
+EMAIL_BACKEND = "cine.mail_backends.DevSMTPBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER    = "all.historyy@gmail.com"
+EMAIL_HOST_PASSWORD= "wjnjiknglngrkgpk"
