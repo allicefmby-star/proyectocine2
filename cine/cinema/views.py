@@ -448,3 +448,4 @@ class CancelOrderView(LoginRequiredMixin, View):
            f"Orden #{order.id} cancelada y asientos liberados correctamente."
        )
        return redirect('orders_list')
+   
