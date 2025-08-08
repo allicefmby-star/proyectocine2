@@ -368,12 +368,16 @@
                     </li>
                 </ul>
 
-                <form class="d-flex ms-lg-auto me-lg-3 my-2 my-lg-0" role="search" action="{% url 'home' %}" method="get">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Buscar película..." aria-label="Buscar">
-                    <button class="btn btn-axolotl-outline" type="submit" style="padding: 0.5rem 1rem;">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
+<form class="d-flex ms-lg-auto me-lg-3 my-2 my-lg-0 position-relative" role="search" action="{% url 'home' %}" method="get" onsubmit="return false;">
+    <input class="form-control me-2" type="search" id="movie-search-input" name="q" placeholder="Buscar película..." aria-label="Buscar" autocomplete="off">
+    
+    <button class="btn btn-axolotl-outline" type="submit" style="padding: 0.5rem 1rem;">
+        <i class="bi bi-search"></i>
+    </button>
+    
+    <div id="search-results" class="list-group position-absolute top-100 start-0 w-100" style="z-index: 1050;">
+        </div>
+</form>
                 <ul class="navbar-nav">
                      <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Modo de accesibilidad visual">
@@ -458,7 +462,67 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('movie-search-input');
+    const resultsBox = document.getElementById('search-results');
+    // La URL para la API de búsqueda que creamos en urls.py
+    const searchUrl = "{% url 'search_movies_api' %}";
+
+    searchInput.addEventListener('keyup', function() {
+        const query = searchInput.value;
+
+        // Si el campo de búsqueda tiene menos de 2 caracteres, no hacemos nada y limpiamos resultados
+        if (query.length < 2) {
+            resultsBox.innerHTML = '';
+            return;
+        }
+
+        // Hacemos la petición AJAX a nuestra vista de Django
+        fetch(`${searchUrl}?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Limpiamos los resultados anteriores
+                resultsBox.innerHTML = '';
+
+                if (data.movies.length > 0) {
+                    // Iteramos sobre las películas recibidas en el JSON
+                    data.movies.forEach(movie => {
+                        // Creamos un enlace <a> para cada resultado
+                        const link = document.createElement('a');
+                        
+                        // Esta es la URL de detalle de la función que querías
+                        const showtimeDetailUrl = `/showtime/${movie.showtime_pk}/`;
+                        
+                        link.href = showtimeDetailUrl;
+                        link.textContent = movie.title;
+                        link.classList.add('list-group-item', 'list-group-item-action'); // Clases de Bootstrap
+
+                        // Añadimos el enlace al contenedor de resultados
+                        resultsBox.appendChild(link);
+                    });
+                } else {
+                    // Si no hay resultados, mostramos un mensaje
+                    const noResultItem = document.createElement('div');
+                    noResultItem.textContent = 'No se encontraron películas.';
+                    noResultItem.classList.add('list-group-item');
+                    resultsBox.appendChild(noResultItem);
+                }
+            })
+            .catch(error => {
+                console.error('Error durante la búsqueda:', error);
+                resultsBox.innerHTML = '<div class="list-group-item">Error al buscar.</div>';
+            });
+    });
+
+    // Opcional: Ocultar los resultados si el usuario hace clic en cualquier otra parte de la página
+    document.addEventListener('click', function(event) {
+        if (!searchInput.contains(event.target)) {
+            resultsBox.innerHTML = '';
+        }
+    });
+});
+</script>
     {% block extra_scripts %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {

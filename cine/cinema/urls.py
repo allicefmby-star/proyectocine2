@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CancelOrderView, HomeView, SeatSelectionView, ShowtimeDetailView, SnackDetailView, SnackListView, OrderConfirmView, OrderSuccessView, TicketPDFView, OrderListView
+from .views import CancelOrderView, HomeView, SeatSelectionView, ShowtimeDetailView, SnackDetailView, SnackListView, OrderConfirmView, OrderSuccessView, TicketPDFView, OrderListView, search_movies
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
@@ -14,4 +14,7 @@ urlpatterns = [
     path('order/<int:order_id>/ticket.pdf',TicketPDFView.as_view(),name='ticket_pdf'),
     path('order/<int:order_id>/cancel/',CancelOrderView.as_view(),name='order_cancel'),
  
+
+    path("api/search-movies/", search_movies, name="search_movies_api"),
+
 ]

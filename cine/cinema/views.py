@@ -449,3 +449,90 @@ class CancelOrderView(LoginRequiredMixin, View):
        )
        return redirect('orders_list')
    
+
+
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Movie
+
+# tu_app/views.py
+
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Movie
+import logging  # Es buena práctica usar logging, pero print es más directo para esto.
+
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import Movie, Showtime # Asegúrate de importar Showtime también
+
+def search_movies(request):
+    """
+    Busca películas activas que coincidan con la consulta 'q'
+    y devuelve un JSON con el título y el ID de su primera función disponible.
+    """
+    
+    # ▼▼▼ CÓDIGO TEMPORAL PARA DEPURAR ▼▼▼
+    # Vamos a imprimir todas las funciones activas que hay en el sistema AHORA MISMO.
+    print("\n--- CARTELERA ACTIVA (Películas con funciones futuras) ---")
+    active_showtimes = Showtime.objects.filter(
+        start_time__gte=timezone.now(), 
+        movie__is_active=True
+    ).order_by('movie__title', 'start_time')
+
+    if not active_showtimes:
+        print("NO HAY NINGUNA FUNCIÓN ACTIVA EN EL SISTEMA.")
+    else:
+        current_movie = ""
+        for showtime in active_showtimes:
+            if showtime.movie.title != current_movie:
+                current_movie = showtime.movie.title
+                print(f"\nPelícula: '{current_movie}' (Activa: {showtime.movie.is_active})")
+            
+            # Formateamos la fecha para que sea legible
+            formatted_time = showtime.start_time.strftime('%d de %b, %Y a las %H:%M')
+            print(f"  -> Función: {formatted_time}")
+    print("----------------------------------------------------------\n")
+    # ▲▲▲ FIN DEL CÓDIGO TEMPORAL ▲▲▲
+
+    query = request.GET.get('q', '')
+    print(f"========== 1. BÚSQUEDA INICIADA ==========")
+    print(f"Query recibido: '{query}'")
+
+    movies_data = []
+
+    if query:
+        movies = Movie.objects.filter(
+            title__icontains=query, 
+            is_active=True,
+            showtimes__start_time__gte=timezone.now()
+        ).distinct()
+        
+        print(f"========== 2. RESULTADO DE LA CONSULTA A LA BD ==========")
+        print(f"Películas encontradas por el filtro principal: {movies}")
+        
+        # ... el resto de tu código sigue igual ...
+        
+        print(f"\n========== 3. RECORRIENDO PELÍCULAS ENCONTRADAS ==========")
+        if not movies:
+            print("No se encontró ninguna película que cumpla todos los criterios del filtro.")
+        for movie in movies:
+            print(f"\nProcesando película: '{movie.title}' (ID: {movie.id})")
+            first_showtime = movie.showtimes.filter(
+                start_time__gte=timezone.now()
+            ).order_by('start_time').first()
+            print(f"Buscando primera función futura... Resultado: {first_showtime}")
+            if first_showtime:
+                print(f"✅ FUNCIÓN ENCONTRADA. Añadiendo a los resultados (Showtime ID: {first_showtime.pk}).")
+                movies_data.append({
+                    'title': movie.title,
+                    'showtime_pk': first_showtime.pk
+                })
+            else:
+                print(f"❌ NO SE ENCONTRÓ una función futura para '{movie.title}'. No se añadirá a los resultados.")
+    
+    print(f"\n========== 4. DATOS FINALES PARA ENVIAR ==========")
+    print(f"JSON a devolver: {{'movies': {movies_data}}}")
+    print(f"=================================================\n")
+
+    return JsonResponse({'movies': movies_data})
