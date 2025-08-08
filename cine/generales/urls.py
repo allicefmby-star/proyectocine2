@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-
+from . import views  # ← Corrección aquí
 # Para forzar POST en logout, creamos una subclase:
 class LogoutPostOnly(auth_views.LogoutView):
     http_method_names = ['post']
@@ -14,4 +14,6 @@ urlpatterns = [
     path('logout/', 
          LogoutPostOnly.as_view(), 
          name='logout'),
+    path('register/', views.registro, name='register'),
+
 ]
