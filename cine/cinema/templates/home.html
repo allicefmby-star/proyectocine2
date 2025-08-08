@@ -1,20 +1,48 @@
 {% extends "baseHome.html" %}
 {% load static %}
-{% block title %}aztlan cinema — Estrenos de del fondo del mar{% endblock %}
+{% block title %}Aztlan Cinema — Estrenos del fondo del mar{% endblock %}
 
 {% block extra_head %}
 <style>
-    /* --- Paleta de Colores Neón y Vibrante --- */
+    /* --- Paleta de Colores Neón y Vibrante (Default) --- */
     :root {
-        --neon-dark-blue: #100e4aff;  /* Fondo casi negro azulado */
-        --neon-fuchsia: #F600FF;    /* Fucsia eléctrico */
-        --neon-cyan: #00DBDE;      /* Cian brillante */
-        --solar-yellow: #FFD700;   /* Amarillo dorado como acento */
+        --neon-dark-blue: #100e4aff;
+        --neon-fuchsia: #F600FF;
+        --neon-cyan: #00DBDE;
+        --solar-yellow: #FFD700;
         --light-text: #F5F5F5;
 
         --gradient-primary: linear-gradient(90deg, var(--neon-fuchsia) 0%, var(--neon-cyan) 100%);
         --gradient-secondary: linear-gradient(90deg, var(--neon-cyan) 0%, var(--solar-yellow) 100%);
     }
+
+    /* --- INICIO: REGLAS DE DALTONISMO PARA TEMA NEÓN --- */
+    /* Estas reglas se activan cuando el JS de baseHome.html cambia el atributo data-colorblind-mode */
+
+    /* Protanopia/Deuteranopia (deficiencia Rojo-Verde) */
+    html[data-colorblind-mode="protanopia"],
+    html[data-colorblind-mode="deuteranopia"] {
+        --neon-fuchsia: #FFA500;  /* Naranja brillante en lugar de fucsia */
+        --neon-cyan: #1E90FF;     /* Azul más intenso en lugar de cian */
+        --solar-yellow: #FFFF00; /* Amarillo puro y brillante */
+
+        /* Actualizamos los gradientes con los nuevos colores */
+        --gradient-primary: linear-gradient(90deg, var(--neon-fuchsia) 0%, var(--neon-cyan) 100%);
+        --gradient-secondary: linear-gradient(90deg, var(--neon-cyan) 0%, var(--solar-yellow) 100%);
+    }
+
+    /* Tritanopia (deficiencia Azul-Amarillo) */
+    html[data-colorblind-mode="tritanopia"] {
+        --neon-fuchsia: #FF1493;  /* Rosa profundo (muy distinguible del verde) */
+        --neon-cyan: #32CD32;     /* Verde lima en lugar de cian */
+        --solar-yellow: #FF6347; /* Tomate (rojo-naranja) en lugar de amarillo */
+        
+        /* Actualizamos los gradientes con los nuevos colores */
+        --gradient-primary: linear-gradient(90deg, var(--neon-fuchsia) 0%, var(--neon-cyan) 100%);
+        --gradient-secondary: linear-gradient(90deg, var(--neon-cyan) 0%, var(--solar-yellow) 100%);
+    }
+    /* --- FIN: REGLAS DE DALTONISMO PARA TEMA NEÓN --- */
+
 
     /* --- Fondo y Partículas de Luz --- */
     body {
@@ -218,7 +246,7 @@
             Aztlan Cinema
         </h1>
         <p class="hero-subtitle-vibrant">
-            Un acuario lleno de historias te espera. Vive el cine como un chapuzon.
+            Un acuario lleno de historias te espera. Vive el cine como un chapuzón.
         </p>
         <a class="btn btn-glow" href="#cartelera" role="button">
             <i class="bi bi-rocket-takeoff-fill me-2"></i>Descubrir Cartelera
@@ -266,7 +294,7 @@
 
     <div class="text-center my-5 pt-4">
         <h2 class="section-title">
-            el balde de la carnada
+            El balde de la carnada
         </h2>
     </div>
 
