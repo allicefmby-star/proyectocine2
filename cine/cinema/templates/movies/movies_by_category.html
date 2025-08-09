@@ -1,0 +1,37 @@
+{% extends 'basehome.html' %}
+
+{% block title %}Películas de {{ category.name }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 text-center my-4">
+            <h1 class="hero-title">Películas de {{ category.name }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        {% if movies %}
+            {% for movie in movies %}
+                <div class="col-md-4 mb-4">
+                    <div class="card card-axolotl">
+                        {% if movie.poster %}
+                            <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 400px;">
+                                No hay póster disponible
+                            </div>
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ movie.title }}</h5>
+                            <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
+                            <a href="{% url 'showtime_detail' pk=movie.id %}" class="btn btn-axolotl-outline">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p>No hay películas en esta categoría todavía.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

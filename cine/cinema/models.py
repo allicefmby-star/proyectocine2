@@ -78,7 +78,8 @@ class Seat(models.Model):
 # ──────────────────────────────── PELÍCULAS ───────────────────────────────
 class Genre(models.Model):
     name = models.CharField(max_length=50, unique=True)
-
+    # Añade 'null=True' para permitir valores nulos por el momento
+    slug = models.SlugField(max_length=50, unique=True, null=True, blank=True)
 
     def __str__(self):
         return self.name
