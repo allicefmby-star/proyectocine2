@@ -57,11 +57,11 @@ class Auditorium(TimeStampedModel):
 
 
 class Seat(models.Model):
-    """Asiento fijo; se crea automáticamente a partir del layout."""
     auditorium    = models.ForeignKey(Auditorium, on_delete=models.CASCADE, related_name='seats')
-    row           = models.PositiveSmallIntegerField()
+    row           = models.CharField(max_length=2, help_text='La fila, representada con una letra (ej. A, B)') # <-- CAMBIADO
     col           = models.PositiveSmallIntegerField()
-    seat_type     = models.CharField(max_length=20, default='standard')  # ej. VIP, 4DX…
+    seat_type     = models.CharField(max_length=20, default='standard')
+    # ...
 
 
     class Meta:

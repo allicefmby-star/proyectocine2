@@ -21,6 +21,12 @@ import qrcode
 import logging
 
 
+# --- Función auxiliar para convertir números a letras ---
+def number_to_letter(n):
+    """Convierte un número entero a su representación de letra (1=A, 2=B)."""
+    return chr(64 + n)
+
+
 # --- VISTA PARA LA PÁGINA DE INICIO (CORREGIDA) ---
 class HomeView(TemplateView):
     template_name = "home.html"
@@ -46,20 +52,20 @@ class HomeView(TemplateView):
             .order_by("-updated")[:6]
         )
         # Se agregan todas las categorías para que el navbar funcione
-        ctx['categories'] = Genre.objects.all()  # ✅ Corregido: se usa 'Genre'
+        ctx['categories'] = Genre.objects.all()
         
         return ctx
 
 # --- VISTA PARA LISTAR PELÍCULAS POR CATEGORÍA (CORREGIDA) ---
 def movies_by_category(request, category_slug):
     # Obtiene la categoría, o devuelve un 404 si no existe
-    category = get_object_or_404(Genre, slug=category_slug) # ✅ Corregido: se usa 'Genre'
+    category = get_object_or_404(Genre, slug=category_slug)
     
     # Filtra las películas que pertenecen a esa categoría
-    movies = Movie.objects.filter(genres=category)  # ✅ Corregido: se usa 'Movie' y se filtra por el campo 'genres'
+    movies = Movie.objects.filter(genres=category)
     
     # Asegúrate de pasar las categorías para que el navbar siga funcionando
-    all_categories = Genre.objects.all() # ✅ Corregido: se usa 'Genre'
+    all_categories = Genre.objects.all()
 
     context = {
         'category': category,
@@ -68,6 +74,93 @@ def movies_by_category(request, category_slug):
     }
     
     return render(request, 'movies/movies_by_category.html', context)
+
+
+# --- VISTA PARA SELECCIÓN DE ASIENTOS (MODIFICADA) ---
+class SeatSelectionView(LoginRequiredMixin, View):
+    login_url = 'login'
+    template_name = 'seat_selection.html'
+
+    def get(self, request, pk):
+        showtime = get_object_or_404(
+            Showtime.objects.select_related("auditorium__cinema", "movie"),
+            pk=pk
+        )
+        aud = showtime.auditorium
+        
+        # Obtener los asientos ya reservados
+        taken = set(
+         showtime.tickets
+         .filter(status__in=[ReservationStatus.RESERVED, ReservationStatus.PAID])
+            .values_list("seat__id", flat=True)
+        )
+        
+        # Generar una cuadrícula de asientos con letras para las filas
+        grid = {}
+        for row_num in range(1, aud.total_rows + 1):
+            row_letter = number_to_letter(row_num)
+            for col_num in range(1, aud.total_cols + 1):
+                # Usamos una clave compuesta como "A-1" para identificar cada asiento
+                seat_id = f"{row_letter}-{col_num}"
+                
+                # Aquí podrías usar get_or_create para crear asientos dinámicamente si no existen
+                # o simplemente listar los que ya están en la base de datos
+                try:
+                    seat = aud.seats.get(row=row_letter, col=col_num)
+                except Seat.DoesNotExist:
+                    # En este caso, el asiento no existe, podrías decidir si crearlo o no
+                    # Para esta lógica, simplemente lo saltaremos
+                    continue
+                
+                grid.setdefault(row_letter, []).append(seat)
+        
+        return render(request, self.template_name, {
+            "showtime": showtime,
+            "grid": grid,
+            "taken": taken,
+        })
+    
+    @transaction.atomic
+    def post(self, request, pk):
+        showtime = get_object_or_404(Showtime, pk=pk)
+        seat_ids = request.POST.getlist('seats')
+        if not seat_ids:
+            return self.get(request, pk)
+
+        # <-- Aquí creamos el Customer si no existe -->
+        customer, created = Customer.objects.get_or_create(user=request.user)
+
+        tickets, total = [], 0
+        for sid in seat_ids:
+            # Aquí necesitamos buscar el asiento por su nueva forma de ID
+            row_letter, col_num = sid.split('-')
+            ticket, was_created = Ticket.objects.get_or_create(
+                showtime=showtime,
+                seat__row=row_letter,
+                seat__col=col_num,
+                defaults={
+                    'customer': customer,
+                    'status': ReservationStatus.RESERVED,
+                    'price': showtime.base_price
+                }
+            )
+            if not was_created and ticket.status != ReservationStatus.RESERVED:
+                ticket.status = ReservationStatus.RESERVED
+                ticket.customer = customer
+                ticket.price = showtime.base_price
+                ticket.save()
+            tickets.append(ticket)
+            total += float(ticket.price)
+
+        order = Order.objects.create(
+            customer=customer,
+            total_amount=total,
+            status=Order.Status.PENDING
+        )
+        for t in tickets:
+            OrderTicket.objects.create(order=order, ticket=t)
+
+        return redirect('order_confirm', order_id=order.id)
 
 
 # --- RESTO DE LAS VISTAS (SIN MODIFICACIONES) ---
@@ -139,98 +232,6 @@ class SnackDetailView(LoginRequiredMixin, DetailView):
             f"Añadiste {qty} × {self.object.name} a tu orden #{order.id}."
         )
         return redirect('snack_detail', pk=self.object.pk)
-
-class SeatSelectionView(LoginRequiredMixin, View):
-    login_url = 'login'
-    template_name = 'seat_selection.html'
-
-    def get(self, request, pk):
-        showtime = get_object_or_404(
-            Showtime.objects.select_related("auditorium__cinema", "movie"),
-            pk=pk
-        )
-        aud = showtime.auditorium
-        taken = set(
-            showtime.tickets
-            .filter(status__in=[ReservationStatus.RESERVED, ReservationStatus.PAID])
-            .values_list("seat_id", flat=True)
-        )
-        seats_qs = aud.seats.all().order_by("row", "col")
-        if not seats_qs.exists():
-            return render(request, self.template_name, {
-                "showtime": showtime,
-                "no_seats": True
-            })
-        grid = {}
-        for seat in seats_qs:
-            grid.setdefault(seat.row, []).append(seat)
-        return render(request, self.template_name, {
-            "showtime": showtime,
-            "grid": grid,
-            "taken": taken,
-        })
-
-    @transaction.atomic
-    def post(self, request, pk):
-        showtime = get_object_or_404(Showtime, pk=pk)
-        seat_ids = request.POST.getlist('seats')
-        if not seat_ids:
-            return self.get(request, pk)
-
-        # <-- Aquí creamos el Customer si no existe -->
-        customer, created = Customer.objects.get_or_create(user=request.user)
-
-        tickets, total = [], 0
-        for sid in seat_ids:
-            ticket, was_created = Ticket.objects.get_or_create(
-                showtime=showtime,
-                seat_id=sid,
-                defaults={
-                    'customer': customer,
-                    'status': ReservationStatus.RESERVED,
-                    'price': showtime.base_price
-                }
-            )
-            if not was_created and ticket.status != ReservationStatus.RESERVED:
-                ticket.status = ReservationStatus.RESERVED
-                ticket.customer = customer
-                ticket.price = showtime.base_price
-                ticket.save()
-            tickets.append(ticket)
-            total += float(ticket.price)
-
-        order = Order.objects.create(
-            customer=customer,
-            total_amount=total,
-            status=Order.Status.PENDING
-        )
-        for t in tickets:
-            OrderTicket.objects.create(order=order, ticket=t)
-
-        return redirect('order_confirm', order_id=order.id)
-    
-def send_order_confirmation_email(order):
-    """
-    Envía al usuario un email (HTML + texto plano) confirmando
-    que su orden fue pagada exitosamente.
-    """
-    user = order.customer.user
-    subject = f'Confirmación de orden #{order.id}'
-    from_email = settings.DEFAULT_FROM_EMAIL
-    to = [user.email]
-
-    context = {
-        'user': user,
-        'order': order,
-    }
-
-    # Renderizamos ambas versiones del correo
-    text_body = render_to_string('emails/order_confirmation.txt', context)
-    html_body = render_to_string('emails/order_confirmation.html', context)
-
-    msg = EmailMultiAlternatives(subject, text_body, from_email, to)
-    msg.attach_alternative(html_body, "text/html")
-    msg.send()
 
 class OrderConfirmView(LoginRequiredMixin, View):
     login_url = 'login'
